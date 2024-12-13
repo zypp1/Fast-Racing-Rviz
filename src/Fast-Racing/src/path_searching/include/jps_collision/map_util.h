@@ -61,10 +61,12 @@ namespace JPS {
         nh.param("map/x_size",map_size(0),100.0);
         nh.param("map/y_size",map_size(1),100.0);
         nh.param("use_esdf",use_esdf,false);
-        nh.param("world_frame_id",world_frame_id,std::string("/world_enu"));
+        // nh.param("world_frame_id",world_frame_id,std::string("/world_enu"));
+        nh.param("world_frame_id",world_frame_id,std::string("world"));
 
         origin_d_[0] = -map_size(0)/2;
-        origin_d_[1] = -10.0;
+        // origin_d_[1] = -10.0;
+        origin_d_[1] = -map_size(1)/2;
         origin_d_[2] = 0;
         dim_(0) = map_size(0)/res_;
         dim_(1) = map_size(1)/res_;
@@ -79,7 +81,7 @@ namespace JPS {
           tmp_buffer2_ = std::vector<double>(buffer_size, 0);
           esdf_pub_ = nh.advertise<sensor_msgs::PointCloud2>("/global_esdf", 10);
         }
-        point_cloud_sub_ = nh.subscribe("/airsim_global_map", 10, &MapUtil::GlobalMapBuild, this);
+        point_cloud_sub_ = nh.subscribe("/map_generator/global_cloud", 10, &MapUtil::GlobalMapBuild, this);
       }
       void GlobalMapBuild(const sensor_msgs::PointCloud2 & pointcloud_map){
         if(has_map) return;

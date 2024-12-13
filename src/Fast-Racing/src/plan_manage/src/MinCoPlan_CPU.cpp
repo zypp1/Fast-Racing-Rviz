@@ -138,7 +138,7 @@ void MavGlobalPlanner::plan(const Eigen::MatrixXd &iniState, const Eigen::Matrix
 
         visualization.visualize(traj);
         visualization.visualizeEllipsoid(traj,450);
-        // visualization.visualizeQuadrotor(traj, 70);
+        visualization.visualizeQuadrotor(traj, 70);
     }
     quadrotor_msgs::PolynomialTrajectory traj_msg;
     traj_msg = traj2msg(traj);

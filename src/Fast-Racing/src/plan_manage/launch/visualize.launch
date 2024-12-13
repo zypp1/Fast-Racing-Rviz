@@ -2,7 +2,7 @@
 
   <!-- rviz -->
    <node name="rviz" pkg="rviz" type="rviz" output="screen"
-       args="-d $(find plan_manage)/launch/map_se3.rviz"> 
+       args="-d $(find plan_manage)/launch/include/map_se3.rviz"> 
   </node>
 
 

@@ -1,0 +1,57 @@
+<launch>
+    <arg name="map_size_x" value="15.0"/>
+    <arg name="map_size_y" value="15.0"/>
+    <arg name="map_size_z" value=" 3.0"/>
+    <arg name="odom_topic" value="/visual_slam/odom" />
+
+    <!-- use simulator -->
+    <include file="$(find plan_manage)/launch/include/simulator.xml">
+        <arg name="map_size_x_" value="$(arg map_size_x)"/>
+        <arg name="map_size_y_" value="$(arg map_size_y)"/>
+        <arg name="map_size_z_" value="$(arg map_size_z)"/>
+        <arg name="c_num" value="20"/>
+        <arg name="p_num" value="0"/>
+        <arg name="min_dist" value="1.2"/>
+
+        <arg name="odometry_topic" value="$(arg odom_topic)" />
+    </include>
+
+    <!-- trajectory server -->
+    <node pkg="traj_server" type="traj_server_node" name="traj_server" output="screen" launch-prefix="">
+        <remap from="~/position_command" to="/position_cmd"/>
+        <remap from="~/odometry"      to="/visual_slam/odom"/>
+        <remap from="~/trajectory" to="/trajectory"/>
+	</node>
+
+    <!-- waypoint callback -->
+    <node pkg="waypoint_generator" name="waypoint_generator" type="waypoint_generator" output="screen">
+        <remap from="~goal" to="/goal"/>
+        <param name="waypoint_type" value="manual-lonely-waypoint"/>
+    </node>
+
+    <!-- se3 planner -->
+    <node pkg="plan_manage" type="se3_node" name="se3_node" output="screen">
+      <remap from="~waypoints"       to="/waypoint_generator/waypoints"/>
+      <!-- <remap from="~PointCloud_in"   to="/airsim_global_map"/> -->
+      <remap from="~PointCloud_in"   to="/map_generator/global_cloud"/>
+      
+      <remap from="~odom"            to="$(arg odom_topic)"/>
+      <remap from="~trajectory"      to="/trajectory" />
+      <rosparam file="$(find plan_manage)/misc/zhangjiajie_params.yaml" command="load" />
+    
+      <param name="map/z_size" value="2.8" type="double"/>
+      <param name="map/x_size" value="70" type="double"/>
+      <param name="map/y_size" value="400" type="double"/>
+      <param name="world_frame_id" value="world" type="string"/>
+      <param name="use_esdf" value="false" type="bool"/>
+      <!-- <param name="host_ip" type="string" value="$(arg host)" /> -->
+
+      <param name="jps/resolution" value="0.1" type="double"/>
+      <param name="jps/lambda_heu" value="1.0" type="double"/>
+      <param name="jps/allocate_num" value="500000" type="double"/>
+      <param name="jps/use_gridmap" value="true" type="bool"/>
+    </node>
+
+
+    
+</launch>
